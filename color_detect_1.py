@@ -1,9 +1,13 @@
 import numpy as np
 import cv2
+import argparse
 
-filepath = ""
+# CLI: for parse args
+parser = argparse.ArgumentParser(description="")
+parser.add_argument('target', help='Target video')
+args = parser.parse_args()
 
-video = cv2.VideoCapture(filepath)
+video = cv2.VideoCapture(args.target)
 
 while(video.isOpened()):
     ret, frame = video.read()
