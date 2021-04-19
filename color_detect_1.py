@@ -20,7 +20,7 @@ while(video.isOpened()):
     frame_out = cv2.bitwise_and(frame_hsv, frame_hsv, mask=frame_mask)
     frame_out_2 = frame_out
 
-	# 面積・重心計算付きのラベリング処理を行う
+    # 面積・重心計算付きのラベリング処理を行う
     num_labels, label_image, stats, center = cv2.connectedComponentsWithStats(frame_mask)
 
     # 最大のラベルは画面全体を覆う黒なので不要．データを削除
