@@ -12,14 +12,18 @@ video = cv2.VideoCapture(args.target)
 while(video.isOpened()):
     ret, frame = video.read()
 
-    points = np.array([[1400,0],[1400,1080],[1920,1080],[1920,0]])
-    cv2.fillPoly(frame, pts=[points], color=(255,255,255))
+    points_1 = np.array([[1400,0],[1400,1080],[1920,1080],[1920,0]])
+    cv2.fillPoly(frame, pts=[points_1], color=(0,0,0))
+
+    points_2 = np.array([[0,0],[0,1080],[700,1080],[700,0]])
+    cv2.fillPoly(frame, pts=[points_2], color=(0,0,0))
     
     frame_hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
 
     hsv_low = np.array([39,45,153])
     hsv_upper = np.array([95,111,255])
     frame_mask = cv2.inRange(frame_hsv, hsv_low, hsv_upper)
+    frame_mask_filterd = cv2.medianBlur(frame_mask,55)
 	
     frame_out = cv2.bitwise_and(frame, frame, mask=frame_mask)
     frame_out_2 = frame_out
@@ -29,6 +33,12 @@ while(video.isOpened()):
 
     # 最大のラベルは画面全体を覆う黒なので不要．データを削除
     num_labels = num_labels - 1
+
+    for i in range(1, num_labels):
+        sizes = stats[1:, -1]
+        # remove small object
+        if 20 < sizes[i - 1]:
+            stats[label_image == i] = 255
 
     if(num_labels > 3):
         num_labels = 3
@@ -56,7 +66,7 @@ while(video.isOpened()):
         cv2.putText(frame_out_2, "%d"%(s), (x, y+h+30), cv2.FONT_HERSHEY_PLAIN, 1, (255, 255, 0))
 
         # (X)ウィンドウに表示
-        cv2.imshow('OpenCV Window', frame)
+        cv2.imshow('OpenCV Window', frame_out_2)
         
     if cv2.waitKey(1) & 0xFF == ord('q'):
         break
