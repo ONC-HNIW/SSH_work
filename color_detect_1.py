@@ -11,13 +11,17 @@ video = cv2.VideoCapture(args.target)
 
 while(video.isOpened()):
     ret, frame = video.read()
+
+    points = np.array([[1400,0],[1400,1080],[1920,1080],[1920,0]])
+    cv2.fillPoly(frame, pts=[points], color=(255,255,255))
+    
     frame_hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
-	
-    hsv_low = np.array([0,0,0])
-    hsv_upper = np.array([100,100,100])
+
+    hsv_low = np.array([39,45,153])
+    hsv_upper = np.array([95,111,255])
     frame_mask = cv2.inRange(frame_hsv, hsv_low, hsv_upper)
 	
-    frame_out = cv2.bitwise_and(frame_hsv, frame_hsv, mask=frame_mask)
+    frame_out = cv2.bitwise_and(frame, frame, mask=frame_mask)
     frame_out_2 = frame_out
 
     # 面積・重心計算付きのラベリング処理を行う
@@ -25,6 +29,10 @@ while(video.isOpened()):
 
     # 最大のラベルは画面全体を覆う黒なので不要．データを削除
     num_labels = num_labels - 1
+
+    if(num_labels > 3):
+        num_labels = 3
+
     stats = np.delete(stats, 0, 0)
     center = np.delete(center, 0, 0)
 
@@ -48,7 +56,7 @@ while(video.isOpened()):
         cv2.putText(frame_out_2, "%d"%(s), (x, y+h+30), cv2.FONT_HERSHEY_PLAIN, 1, (255, 255, 0))
 
         # (X)ウィンドウに表示
-        cv2.imshow('OpenCV Window', frame_out_2)
+        cv2.imshow('OpenCV Window', frame)
         
     if cv2.waitKey(1) & 0xFF == ord('q'):
         break
