@@ -20,8 +20,8 @@ while(video.isOpened()):
     
     frame_hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
 
-    hsv_low = np.array([39,45,153])
-    hsv_upper = np.array([95,111,255])
+    hsv_low = np.array([40,45,150])
+    hsv_upper = np.array([85,120,255])
     frame_mask = cv2.inRange(frame_hsv, hsv_low, hsv_upper)
     frame_mask_filterd = cv2.medianBlur(frame_mask,55)
 	
@@ -33,15 +33,6 @@ while(video.isOpened()):
 
     # 最大のラベルは画面全体を覆う黒なので不要．データを削除
     num_labels = num_labels - 1
-
-    for i in range(1, num_labels):
-        sizes = stats[1:, -1]
-        # remove small object
-        if 20 < sizes[i - 1]:
-            stats[label_image == i] = 255
-
-    if(num_labels > 3):
-        num_labels = 3
 
     stats = np.delete(stats, 0, 0)
     center = np.delete(center, 0, 0)
